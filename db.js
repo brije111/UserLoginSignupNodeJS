@@ -1,2 +1,2 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/CRMdb');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/CRMdb');

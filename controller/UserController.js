@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
-var User = require('../user/User');
+var User = require('../models/User');
 
 // CREATES A NEW USER
 router.post('/', function (req, res) {
@@ -20,17 +20,26 @@ router.post('/', function (req, res) {
 });
 
 // GET A USER BY EMAIL & PASSWORD
-router.post('/login', function (req, res) {
+router.post('/login', async function (req, res) {
     //console.log(req.body.email + req.body.password);
-    User.findOne({
-            email : req.body.email,
-            password : req.body.password
-        }, 
-        function (err, user) {
-            //console.log(user);
-            if (err) return res.status(500).send("There was a problem finding the users.");
-            res.status(200).send(user);
-        });
+    
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(422).send({ error: 'Must provide email & password' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(422).send({ error: 'Email not found' });
+    }
+
+    if(user.password === password)
+        //const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+        res.send(user);
+    else
+        res.status(422).send({ error: 'Invalid password or email' });
+    
 });
 
 // RETURNS ALL THE USERS IN THE DATABASE

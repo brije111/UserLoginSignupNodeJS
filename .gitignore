@@ -3,5 +3,5 @@ node_modules
 npm-debug.log
 .serverless
 variables.env
-config
+config/
 .env
